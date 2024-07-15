@@ -1,7 +1,14 @@
-import { fastifyWebsocket } from "@fastify/websocket";
+import { fastifyWebsocket, WebSocket } from "@fastify/websocket";
 import fastify from "fastify";
 import { v4 as uuidv4 } from "uuid";
+import { RegionSystemMetricsPort } from "./ports/region-system-metrics";
 import { IRegionSystemMetrics } from "./types/region-system-metrics";
+import { FastifyInstance } from "fastify/types/instance";
+
+interface ExtendedWebsocket extends WebSocket {
+  id: string;
+  subscribedRegions: string[];
+}
 
 const VALID_REGIONS = [
   "us-east",
@@ -12,22 +19,42 @@ const VALID_REGIONS = [
   "ap-southeast",
 ];
 
+export function broadcastRegionalData(
+  regionSystemMetricsPort: RegionSystemMetricsPort,
+  server: FastifyInstance,
+  interval: number = 5000
+) {
+  setInterval(async () => {
+    const regionSystemMetricData =
+      await regionSystemMetricsPort.getRegionsSystemMetrics(VALID_REGIONS);
+
+    // TODO: Send message only for subscribed regions
+    // Send data for each of the regional endpoints
+    server.websocketServer.clients.forEach((client) => {
+      // const subscribedRegionSystemMetricData = regionSystemMetricData.filter(
+      //   (region) => client.subscribedRegions.includes(region)
+      // );
+      client.send(JSON.stringify(regionSystemMetricData));
+    });
+  }, interval);
+}
+
 export function buildServer() {
   const server = fastify();
+  const regionSystemMetricsPort = new RegionSystemMetricsPort();
 
-  server.register(fastifyWebsocket, {
-    options: {
-      maxPayload: 1048576, // 1 MiB (1024 bytes * 1024 bytes)
-    },
-    errorHandler(error, socket, request, reply) {},
-  });
+  server.register(fastifyWebsocket);
+
+  broadcastRegionalData(regionSystemMetricsPort, server);
 
   server.register(async function () {
     server.route({
       method: "GET",
       url: "/region-system-metrics-ws",
       handler: () => {},
-      wsHandler: (socket, request) => {
+      wsHandler: (websocket) => {
+        const socket = websocket as ExtendedWebsocket;
+
         const uuid = uuidv4();
         socket.id = uuid;
         socket.subscribedRegions = VALID_REGIONS;
@@ -86,7 +113,7 @@ export function buildServer() {
 
           socket.subscribedRegions = regions;
           console.log(
-            `client ${uuid} subscribed to regions: '${regions.join(", ")}'`
+            `client ${socket.id} subscribed to regions: '${regions.join(", ")}'`
           );
 
           const serverMessage = {
