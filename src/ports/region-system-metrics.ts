@@ -15,14 +15,14 @@ export class RegionSystemMetricsPort {
       );
 
       if (!response.ok) {
-        console.log(`Error fetching data for region ${region}`);
+        console.log(`error fetching data for region ${region}`);
         return undefined;
       }
 
       const result: IRegionSystemMetrics = await response.json();
       return result;
     } catch (e) {
-      console.log(`Error fetching data for region ${region}`, e);
+      console.log(`error fetching data for region ${region}`, e);
       return undefined;
     }
   }
@@ -41,7 +41,7 @@ export class RegionSystemMetricsPort {
         return promise.value;
       } else {
         console.log(
-          `Error fetching data for region ${regions[index]}:`,
+          `error fetching data for region ${regions[index]}:`,
           promise.reason
         );
         return undefined;

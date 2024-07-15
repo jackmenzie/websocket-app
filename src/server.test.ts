@@ -9,7 +9,7 @@ t.test("Region System Metrics WebSocket", async (t) => {
     server.close();
   });
 
-  t.test("Connects to WS and sends/receives valid message", async () => {
+  t.test("Connects to WS and sends/receives valid message", async (t) => {
     const socket = await server.injectWS("/region-system-metrics-ws");
     const clientMessage = {
       regions: ["us-east"],
@@ -33,13 +33,15 @@ t.test("Region System Metrics WebSocket", async (t) => {
     t.match(
       result,
       {
-        hello: "world",
+        message: `Updated regions subscribed to: '${clientMessage.regions.join(
+          ", "
+        )}'`,
       },
       "returns the expected response"
     );
   });
 
-  t.test("Connects to WS and sends/receives invalid message", async () => {
+  t.test("Connects to WS and sends/receives invalid message", async (t) => {
     const socket = await server.injectWS("/region-system-metrics-ws");
     const clientMessage = "Invalid message";
 

@@ -15,7 +15,7 @@ t.test("Region System Metrics Port", async (t) => {
     fetchMock.restore();
   });
 
-  t.test("Calls API with success", async () => {
+  t.test("Calls API with success", async (t) => {
     fetchMock.get(
       `https://data--${region}.upscope.io/status?stats=1`,
       mockResponse
@@ -25,7 +25,7 @@ t.test("Region System Metrics Port", async (t) => {
     t.match(result, usEast, "returns the expected reponse");
   });
 
-  t.test("Calls API with non-ok response", async () => {
+  t.test("Calls API with non-ok response", async (t) => {
     fetchMock.mock(`https://data--${region}.upscope.io/status?stats=1`, {
       status: 500,
     });
@@ -34,7 +34,7 @@ t.test("Region System Metrics Port", async (t) => {
     t.match(result, undefined, "returns the expected reponse");
   });
 
-  t.test("Calls API with error thrown", async () => {
+  t.test("Calls API with error thrown", async (t) => {
     fetchMock.mock(`https://data--${region}.upscope.io/status?stats=1`, {
       throws: new Error("Fetch error"),
     });
