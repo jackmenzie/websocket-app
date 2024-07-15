@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from "uuid";
 import { RegionSystemMetricsPort } from "./ports/region-system-metrics";
 import { IRegionSystemMetrics } from "./types/region-system-metrics";
 import { FastifyInstance } from "fastify/types/instance";
+import FastifyVite from "@fastify/vite";
+import { resolve } from "node:path";
 
 interface ExtendedWebsocket extends WebSocket {
   id: string;
@@ -19,7 +21,7 @@ const VALID_REGIONS = [
   "ap-southeast",
 ];
 
-export function broadcastRegionalData(
+export async function broadcastRegionalData(
   regionSystemMetricsPort: RegionSystemMetricsPort,
   server: FastifyInstance,
   interval: number = 5000
@@ -39,7 +41,7 @@ export function broadcastRegionalData(
   }, interval);
 }
 
-export function buildServer() {
+export async function buildServer() {
   const server = fastify();
   const regionSystemMetricsPort = new RegionSystemMetricsPort();
 
@@ -125,6 +127,19 @@ export function buildServer() {
       },
     });
   });
+
+  await server.register(FastifyVite, {
+    root: resolve(__dirname, "../"),
+    dev: process.argv.includes("--dev"),
+    spa: true,
+  });
+
+  server.get("/app/", (req, reply) => {
+    return reply.html();
+  });
+
+  await server.vite.ready();
+  await server.ready();
 
   return server;
 }

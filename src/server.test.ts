@@ -2,8 +2,7 @@ import t from "tap";
 import { buildServer } from "./server";
 
 t.test("Region System Metrics WebSocket", async (t) => {
-  const server = buildServer();
-  await server.ready();
+  const server = await buildServer();
 
   t.teardown(() => {
     server.close();
@@ -27,6 +26,7 @@ t.test("Region System Metrics WebSocket", async (t) => {
 
     socket.send(JSON.stringify(clientMessage));
     const response = await promise;
+    // @ts-ignore
     const result = JSON.parse(response);
     socket.terminate();
 
@@ -57,6 +57,7 @@ t.test("Region System Metrics WebSocket", async (t) => {
 
     socket.send(JSON.stringify(clientMessage));
     const response = await promise;
+    // @ts-ignore
     const result = JSON.parse(response);
     socket.terminate();
 
@@ -88,6 +89,7 @@ t.test("Region System Metrics WebSocket", async (t) => {
 
     socket.send(JSON.stringify(clientMessage));
     const response = await promise;
+    // @ts-ignore
     const result = JSON.parse(response);
     socket.terminate();
 
