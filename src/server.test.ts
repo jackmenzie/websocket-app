@@ -69,4 +69,35 @@ t.test("Region System Metrics WebSocket", async (t) => {
       "returns the expected response"
     );
   });
+
+  t.test("Connects to WS and sends/receives invalid region", async (t) => {
+    const socket = await server.injectWS("/region-system-metrics-ws");
+    const clientMessage = {
+      regions: ["INVALID_REGION"],
+    };
+
+    // Resolves promise when server receives the message
+    let resolvePromise: (value: any) => void;
+    const promise = new Promise((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    socket.on("message", (data) => {
+      resolvePromise(data.toString());
+    });
+
+    socket.send(JSON.stringify(clientMessage));
+    const response = await promise;
+    const result = JSON.parse(response);
+    socket.terminate();
+
+    t.match(
+      result,
+      {
+        error: "Bad Request",
+        message: "invalid regions requested to be subscribed to",
+      },
+      "returns the expected response"
+    );
+  });
 });

@@ -68,13 +68,20 @@ export function buildServer() {
             regions.filter((region) => !VALID_REGIONS.includes(region)).length >
             0
           ) {
-            console.log("Invalid regions request:", regions.join(", "));
+            console.log(
+              `client ${
+                socket.id
+              } requested invalid regions to be subscribed to '${regions.join(
+                ", "
+              )}'`
+            );
             const errorMessage = {
               error: "Bad Request",
               message: "invalid regions requested to be subscribed to",
             };
 
             socket.send(JSON.stringify(errorMessage));
+            return;
           }
 
           socket.subscribedRegions = regions;
