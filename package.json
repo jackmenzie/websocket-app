@@ -13,6 +13,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@fastify/websocket": "^10.0.1",
 		"fastify": "^4.28.1",
 		"fetch-mock": "^10.0.7"
 	},
