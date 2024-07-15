@@ -9,7 +9,7 @@ t.test("Region System Metrics WebSocket", async (t) => {
     server.close();
   });
 
-  t.test("Connects to websocket successfully", async () => {
+  t.test("Connects to WS and sends/receives valid message", async () => {
     const socket = await server.injectWS("/region-system-metrics-ws");
     const clientMessage = {
       regions: ["us-east"],
@@ -30,8 +30,41 @@ t.test("Region System Metrics WebSocket", async (t) => {
     const result = JSON.parse(response);
     socket.terminate();
 
-    t.match(result, {
-      hello: "world",
+    t.match(
+      result,
+      {
+        hello: "world",
+      },
+      "returns the expected response"
+    );
+  });
+
+  t.test("Connects to WS and sends/receives invalid message", async () => {
+    const socket = await server.injectWS("/region-system-metrics-ws");
+    const clientMessage = "Invalid message";
+
+    // Resolves promise when server receives the message
+    let resolvePromise: (value: any) => void;
+    const promise = new Promise((resolve) => {
+      resolvePromise = resolve;
     });
+
+    socket.on("message", (data) => {
+      resolvePromise(data.toString());
+    });
+
+    socket.send(JSON.stringify(clientMessage));
+    const response = await promise;
+    const result = JSON.parse(response);
+    socket.terminate();
+
+    t.match(
+      result,
+      {
+        error: "Bad Request",
+        message: "message must be an object with property 'regions'",
+      },
+      "returns the expected response"
+    );
   });
 });

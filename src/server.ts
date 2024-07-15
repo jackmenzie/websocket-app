@@ -30,7 +30,12 @@ export function buildServer() {
           let regions: string[] = [];
 
           try {
-            regions = JSON.parse(receivedMessage).regions;
+            const parsedMessage = JSON.parse(receivedMessage);
+            if (parsedMessage && Array.isArray(parsedMessage.regions)) {
+              regions = parsedMessage.regions;
+            } else {
+              throw new Error();
+            }
           } catch (e) {
             console.log("Error parsing client message", receivedMessage);
             const errorMessage = {
