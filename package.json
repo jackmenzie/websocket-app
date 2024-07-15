@@ -4,23 +4,23 @@
 	"description": "",
 	"main": "app.js",
 	"scripts": {
-	  "test": "tap run",
-	  "dev": "nodemon --watch src src/app.ts",
-	  "build": "tsc -p tsconfig.json",
-	  "start": "node build/app.js"
+		"test": "tap run",
+		"dev": "nodemon --watch src src/app.ts",
+		"build": "tsc -p tsconfig.json",
+		"start": "node build/app.js"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-	  "fastify": "^4.28.1"
+		"fastify": "^4.28.1",
+		"fetch-mock": "^10.0.7"
 	},
 	"devDependencies": {
-	  "@types/node": "^20.14.10",
-	  "nodemon": "^3.1.4",
-	  "tap": "^21.0.0",
-	  "ts-node": "^10.9.2",
-	  "typescript": "^5.5.3"
+		"@types/node": "^20.14.10",
+		"nodemon": "^3.1.4",
+		"tap": "^21.0.0",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.5.3"
 	}
-  }
-  
+}
