@@ -134,7 +134,7 @@ export async function buildServer() {
     spa: true,
   });
 
-  server.get("/app/", (req, reply) => {
+  server.get("/app", (req, reply) => {
     return reply.html();
   });
 
