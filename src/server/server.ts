@@ -2,7 +2,6 @@ import { fastifyWebsocket, WebSocket } from "@fastify/websocket";
 import fastify from "fastify";
 import { v4 as uuidv4 } from "uuid";
 import { RegionSystemMetricsPort } from "./ports/region-system-metrics";
-import { IRegionSystemMetrics } from "./types/region-system-metrics";
 import { FastifyInstance } from "fastify/types/instance";
 import FastifyVite from "@fastify/vite";
 import { resolve } from "node:path";
@@ -129,7 +128,7 @@ export async function buildServer() {
   });
 
   await server.register(FastifyVite, {
-    root: resolve(__dirname, "../"),
+    root: resolve(__dirname, "../../"),
     dev: process.argv.includes("--dev"),
     spa: true,
   });
@@ -143,3 +142,17 @@ export async function buildServer() {
 
   return server;
 }
+
+async function main() {
+  const server = await buildServer();
+
+  server.listen({ port: 8080 }, (err, address) => {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+    console.log(`Server listening at ${address}`);
+  });
+}
+
+main();
