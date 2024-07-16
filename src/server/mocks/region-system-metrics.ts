@@ -80,5 +80,5 @@ export const usEast: IRegionSystemMetrics = {
     },
   },
   strict: false,
-  server_issue: null,
+  server_issue: "",
 };

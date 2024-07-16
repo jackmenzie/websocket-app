@@ -4,7 +4,8 @@ import useWebSocket from "react-use-websocket";
 import { IRegionSystemMetrics } from "../types/region-system-metrics";
 import RegionSystemMetricCard from "./RegionSystemMetricCard";
 
-const WS_URL = "ws://127.0.0.1:8080/region-system-metrics-ws";
+const WS_URL =
+  "https://websocket-app-497x.onrender.com/region-system-metrics-ws";
 
 const regions = [
   "us-east",
