@@ -6,7 +6,7 @@ interface TopKey {
   [index: number]: string | number;
 }
 
-interface WorkerDetails {
+export interface WorkerDetails {
   wait_time: number;
   workers: number;
   waiting: number;
@@ -47,5 +47,5 @@ export interface IRegionSystemMetrics {
   roles: string[];
   results: Results;
   strict: boolean;
-  server_issue: any;
+  server_issue: string;
 }

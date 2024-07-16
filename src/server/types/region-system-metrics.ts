@@ -47,5 +47,5 @@ export interface IRegionSystemMetrics {
   roles: string[];
   results: Results;
   strict: boolean;
-  server_issue: any;
+  server_issue: string;
 }

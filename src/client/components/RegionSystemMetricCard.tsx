@@ -23,7 +23,10 @@ import {
   CardHeader,
   Heading,
 } from "@chakra-ui/react";
-import { IRegionSystemMetrics } from "../types/region-system-metrics";
+import {
+  IRegionSystemMetrics,
+  WorkerDetails,
+} from "../types/region-system-metrics";
 
 export default function RegionSystemMetricCard({
   regionData,
@@ -218,7 +221,13 @@ export default function RegionSystemMetricCard({
                       </Thead>
                       <Tbody>
                         {regionData.results.stats.server.workers.map(
-                          ([type, details]: any, index: number) => (
+                          (
+                            [type, details]: [
+                              type: string,
+                              details: WorkerDetails
+                            ],
+                            index: number
+                          ) => (
                             <Tr key={index}>
                               <Td px={0}>{type}</Td>
                               <Td>{details.wait_time}</Td>
