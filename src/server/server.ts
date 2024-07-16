@@ -23,7 +23,7 @@ const VALID_REGIONS = [
 export async function broadcastRegionalData(
   regionSystemMetricsPort: RegionSystemMetricsPort,
   server: FastifyInstance,
-  interval: number = 5000
+  interval: number = 1000
 ) {
   setInterval(async () => {
     const regionSystemMetricData =
@@ -35,7 +35,10 @@ export async function broadcastRegionalData(
       // const subscribedRegionSystemMetricData = regionSystemMetricData.filter(
       //   (region) => client.subscribedRegions.includes(region)
       // );
-      client.send(JSON.stringify(regionSystemMetricData));
+      const message = {
+        regionData: regionSystemMetricData,
+      };
+      client.send(JSON.stringify(message));
     });
   }, interval);
 }
