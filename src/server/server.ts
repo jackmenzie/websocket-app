@@ -148,7 +148,7 @@ export async function buildServer() {
 
 async function main() {
   const server = await buildServer();
-  const port = Number(process.env.PORT) || 8080;
+  const port = Number(process.env.PORT) || 10000;
 
   server.listen({ port }, (err, address) => {
     if (err) {
