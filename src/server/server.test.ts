@@ -1,8 +1,10 @@
 import t from "tap";
 import { buildServer } from "./server";
+import { usEast } from "./mocks/region-system-metrics";
+import fetchMock from "fetch-mock";
 
 t.test("Region System Metrics WebSocket", async (t) => {
-  const server = await buildServer();
+  const { server, cancelBroadcast } = await buildServer();
 
   t.teardown(() => {
     server.close();
@@ -101,5 +103,41 @@ t.test("Region System Metrics WebSocket", async (t) => {
       },
       "returns the expected response"
     );
+  });
+
+  t.test("Connects to WS and receives information for a region", async (t) => {
+    const mockResponse = {
+      status: 200,
+      body: usEast,
+    };
+    fetchMock.mock(
+      `https://data--us-east.upscope.io/status?stats=1`,
+      mockResponse
+    );
+
+    const socket = await server.injectWS("/region-system-metrics-ws");
+
+    let resolvePromise: (value: any) => void;
+    const promise = new Promise((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    socket.on("message", (data) => {
+      resolvePromise(data.toString());
+    });
+
+    const response = await promise;
+    // @ts-ignore
+    const result = JSON.parse(response);
+
+    t.match(
+      result,
+      {
+        regionData: [usEast, null, null, null, null, null],
+      },
+      "returns the expected response"
+    );
+    socket.terminate();
+    cancelBroadcast();
   });
 });

@@ -5,6 +5,7 @@ import { RegionSystemMetricsPort } from "./ports/region-system-metrics";
 import { FastifyInstance } from "fastify/types/instance";
 import FastifyVite from "@fastify/vite";
 import { resolve } from "node:path";
+import { clearInterval } from "node:timers";
 
 interface ExtendedWebsocket extends WebSocket {
   id: string;
@@ -20,12 +21,12 @@ const VALID_REGIONS = [
   "ap-southeast",
 ];
 
-export async function broadcastRegionalData(
+export function broadcastRegionalData(
   regionSystemMetricsPort: RegionSystemMetricsPort,
   server: FastifyInstance,
   interval: number = 3000
 ) {
-  setInterval(async () => {
+  const intervalId = setInterval(async () => {
     const regionSystemMetricData =
       await regionSystemMetricsPort.getRegionsSystemMetrics(VALID_REGIONS);
 
@@ -41,6 +42,8 @@ export async function broadcastRegionalData(
       client.send(JSON.stringify(message));
     });
   }, interval);
+
+  return () => clearInterval(intervalId);
 }
 
 export async function buildServer() {
@@ -49,7 +52,10 @@ export async function buildServer() {
 
   server.register(fastifyWebsocket);
 
-  broadcastRegionalData(regionSystemMetricsPort, server);
+  const cancelBroadcast = broadcastRegionalData(
+    regionSystemMetricsPort,
+    server
+  );
 
   server.register(async function () {
     server.route({
@@ -143,21 +149,5 @@ export async function buildServer() {
   await server.vite.ready();
   await server.ready();
 
-  return server;
+  return { server, cancelBroadcast };
 }
-
-async function main() {
-  const server = await buildServer();
-  const host = "RENDER" in process.env ? `0.0.0.0` : `localhost`;
-  const port = Number(process.env.PORT) || 10000;
-
-  server.listen({ host, port }, (err, address) => {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
-    console.log(`Server listening at ${address}`);
-  });
-}
-
-main();

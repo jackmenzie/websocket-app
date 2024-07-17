@@ -5,7 +5,11 @@ import { IRegionSystemMetrics } from "../types/region-system-metrics";
 import RegionSystemMetricCard from "./RegionSystemMetricCard";
 
 const WS_URL =
-  "https://websocket-app-497x.onrender.com/region-system-metrics-ws";
+  process.env.NODE_ENV === "development"
+    ? "ws://[::1]:10000/region-system-metrics-ws"
+    : "https://websocket-app-497x.onrender.com/region-system-metrics-ws";
+
+console.log(process.env.URL);
 
 const regions = [
   "us-east",
